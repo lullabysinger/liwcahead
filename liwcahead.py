@@ -1,5 +1,8 @@
 from collections import defaultdict
 import re
+from unidecode import unidecode
+import string
+from nltk.tokenize import sent_tokenize
 
 class LiwcAhead:
 	"""
@@ -74,6 +77,39 @@ class LiwcAhead:
 	def WC(self, text):
 		return len(text.split())
 
+	def WPS(self, text):
+		return self.WC(text) * 1.0 / len(sent_tokenize(text))
+
+	def get_stats(self, text):
+		stats = defaultdict(list)
+
+		text_nopunct = s.translate(str.maketrans('', '', string.punctuation))
+		stats['AllPunc'] = len(text) - len(text_nopunct)
+
+		words = text_nopunct.split()
+		words_six = filter(lambda w: len(w) >= 6, words)
+		stats['SixLtr'] = len(list(words_six))
+		
+		# code for the following adapted from Ken Benoit / quanteda.dictionaries
+		stats['Period'] = text.count('.')
+		stats['Comma'] = text.count(',')
+		stats['Colon'] = text.count(':')
+		stats['SemiC'] = text.count(';')
+		stats['QMark'] = text.count('?')
+		stats['Exclam'] = text.count('!')
+
+		# requires unicode cleanup to handle fancy punctuation e.g. em-dashes, smart-quotes
+		decoded_text = unidecode(text)
+		stats['Dash'] = decoded_text.count('-') 
+		stats['Quote'] = decoded_text.count('\"') 
+		stats['Aprostro'] = decoded_text.count('\'') 
+
+		# per Benoit:
+		# "note this is specified as "pairs of parentheses""
+		stats['Parenth'] = min(text.count('('), text.count(')'))
+
+		return stats
+
 	# this should be end-user facing...
 	def analyze(self, text):
 		counts_per_category = self.get_counts(text)
@@ -84,12 +120,23 @@ class LiwcAhead:
 			percentage = count / total_words
 			print(f'{self.categories[cat_id]} \t {count} \t {percentage}')
 
+		stats = self.get_stats(text)
+
+		for s in stats:
+			count = stats[s]
+			percentage = count / total_words
+			print(f'{s} \t {count} \t {percentage}')	
+
+		print(f'WPS \t {self.WPS(text)}')	
+		print(f'WC  \t {self.WC(text)}')	
+
 
 import pprint
 la = LiwcAhead("../../Rtemp/nietzsche.dic")
 s = open("../../Rtemp/nietzsche/1895 A.txt").read()
 
 la.analyze(s)
+
 
 # counts_per_category = get_counts(patterns, s)
 # pprint.pprint(counts_per_category)
