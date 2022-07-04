@@ -113,8 +113,7 @@ class LiwcAhead:
 
     # this should be end-user facing...
     def analyze(self, text):
-        output_table = [['Statistic', 'Count (int)', 'Percentage']]
-
+        output_table = [['Statistic', 'Count', 'Percentage']]
         counts_per_category = self.get_counts(text)
         total_words = self.WC(text)
 
@@ -122,29 +121,25 @@ class LiwcAhead:
             count = counts_per_category[cat_id]
             percentage = count / total_words
             output_table.append([self.categories[cat_id], count, format(percentage, '.10f')])
-            #print(f'{self.categories[cat_id]} \t {count} \t {percentage}')
 
         stats = self.get_stats(text)
 
         for s in stats:
             count = stats[s]
             percentage = count / total_words
-            #print(f'{s} \t {count} \t {percentage}')   
             output_table.append([s, count, percentage])
 
-        output_table.append(['WPS', count, '---'])
-        output_table.append(['WC' , count, '---'])
-        #print(f'WPS \t {self.WPS(text)}')  
-        #print(f'WC  \t {self.WC(text)}')   
+        output_table.append(['WPS', count, 'N/A'])
+        output_table.append(['WC' , count, 'N/A']) 
         print (tabulate(output_table, headers='firstrow', tablefmt='fancy_grid', floatfmt=".10f"))
 
         return output_table
 
 
+# testing code ahead
 import pprint
 la = LiwcAhead("../../Rtemp/nietzsche.dic")
 s = open("../../Rtemp/nietzsche/1895 A.txt").read()
-
 la.analyze(s)
 
 
