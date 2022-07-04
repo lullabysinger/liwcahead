@@ -23,7 +23,8 @@ class LiwcAhead:
 				l = l.strip()
 				#print(l)
 				if counter == 0:
-					assert(l == '%')
+					if l != '%': # error in file format in line 0
+						raise ValueError("The dict file needs to start with a '%' on a single line.")
 				elif counter > 0 and reading_categories and l == '%':
 					# separator between categories and terms, switch modes
 					reading_categories = False
@@ -42,7 +43,27 @@ class LiwcAhead:
 		
 		# for each pattern...
 		for pattern_string in self.patterns:
-			matches = re.findall(pattern_string, text) # matches can be used for debugging
+			# here, we distinguish stock LIWC from regex mode, using the compiled re
+			# CASE 1: stock LIWC -- reverse compatibility
+			if not self.regex_mode:
+				# check that there can either be none or at most one '*'
+				if pattern_string.count('*') > 1:
+					raise ValueError("Using compatibility mode, there can only be one '*' in a dictionary pattern.")
+				
+				# check that, if there exists one '*'
+				if pattern_string.count('*') == 1:
+					if pattern_string[-1] != '*': # it must be the end
+						raise ValueError("Using compatibility mode, the '*' wildcard can only appear at the end of a dictionary pattern.")
+				
+				# patch it to be .* for the regex engine...
+				# ... finally compile with case-INsensitivity
+				compiled = re.compile(pattern_string.replace('*', '.*'), re.IGNORECASE)
+		
+			# CASE 2: regex mode - use as usual
+			else:
+				compiled = re.compiled(pattern_string)
+
+			matches = compiled.findall(text) 
 			#print(f'for {pattern_string} = {len(matches)}')
 
 			for cat_id in self.patterns[pattern_string]:
