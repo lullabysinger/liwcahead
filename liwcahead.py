@@ -136,12 +136,12 @@ class LiwcAhead:
         return output_table
 
 
-  def liwcahead_test_nietzsche():
-        # testing code ahead
-        import pprint
-        la = LiwcAhead("../../Rtemp/nietzsche.dic")
-        s = open("../../Rtemp/nietzsche/1895 A.txt").read()
-        la.analyze(s)
+def liwcahead_test_nietzsche():
+    # testing code ahead
+    import pprint
+    la = LiwcAhead("../../Rtemp/nietzsche.dic")
+    s = open("../../Rtemp/nietzsche/1895 A.txt").read()
+    la.analyze(s)
 
 
 
