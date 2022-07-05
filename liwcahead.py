@@ -14,8 +14,8 @@ class LiwcAhead:
         self.regex_mode = regex_mode
 
     def debug(self):
-        pprint.pprint(categories)
-        pprint.pprint(patterns)
+        pprint.pprint(self.categories)
+        pprint.pprint(self.patterns)
 
     def __load_dic(self, filename):
         categories = defaultdict(str)
@@ -136,12 +136,13 @@ class LiwcAhead:
         return output_table
 
 
-# testing code ahead
-import pprint
-la = LiwcAhead("../../Rtemp/nietzsche.dic")
-s = open("../../Rtemp/nietzsche/1895 A.txt").read()
-la.analyze(s)
+  def liwcahead_test_nietzsche():
+        # testing code ahead
+        import pprint
+        la = LiwcAhead("../../Rtemp/nietzsche.dic")
+        s = open("../../Rtemp/nietzsche/1895 A.txt").read()
+        la.analyze(s)
 
 
-# counts_per_category = get_counts(patterns, s)
-# pprint.pprint(counts_per_category)
+
+
